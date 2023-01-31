@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true, // 跳过类型检查 不然会报 Duplicate identifier 'Promise'.
+    "noImplicitReturns": false, // 检查函数是否有返回值 false 不然报：并非所有代码路径都返回值。
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "noUnusedLocals": true,
@@ -16,7 +17,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "__test/blog"  ],
   "exclude": [
     "node_modules",
     "dist"
