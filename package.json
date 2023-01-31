@@ -1,7 +1,7 @@
 {
-  "name": "rollup-typescript-babel-eslint",
+  "name": "markdown-blog-push-tool",
   "version": "1.0.0",
-  "description": "A sample setup using Rollup and Babel to build TypeScript code, and using TypeScript and ESLint",
+  "description": "A markdown blog file push tool for hexo and ",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "scripts": {
@@ -37,11 +37,12 @@
     "url": "rollup-typescript-babel-eslint"
   },
   "keywords": [
-    "rollup",
-    "typescript",
-    "babel",
-    "eslint",
-    "prettier"
+    "markdown",
+    "blog",
+    "MetaWeblog",
+    "hexo",
+    "gray-matter",
+    "docusaurus"
   ],
   "files": [
     "dist",
@@ -54,5 +55,11 @@
     "email": "mail.bitbw@gmail.com",
     "url": "https://github.com/bitbw"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.2.6",
+    "form-data": "^4.0.0",
+    "gray-matter": "^4.0.3",
+    "metaweblog-api": "^1.2.0"
+  }
 }

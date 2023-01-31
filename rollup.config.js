@@ -12,8 +12,8 @@ const extensions = [".js", ".jsx", ".ts", ".tsx"];
 const config = {
   input: "src/main.ts",
   output: [
-    { file: pkg.main, format: "cjs" },
-    { file: pkg.module, format: "es" },
+    { file: pkg.main, format: "cjs", sourcemap: true },
+    { file: pkg.module, format: "es", sourcemap: true },
   ],
   plugins: [
     resolve({
@@ -31,6 +31,16 @@ const config = {
     eslint({
       /* your options */
     }),
+  ],
+  external: [
+    "fs",
+    "path",
+    "crypto",
+    "gray-matter",
+    "form-data",
+    "fs",
+    "metaweblog-api",
+    "axios",
   ],
 };
 
