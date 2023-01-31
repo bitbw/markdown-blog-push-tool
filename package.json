@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "rollup-typescript-babel-eslint"
+    "url": "https://github.com/bitbw/markdown-blog-push-tool.git"
   },
   "keywords": [
     "markdown",
