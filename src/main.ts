@@ -3,43 +3,98 @@ import { promises as fs } from "fs";
 import path from "path";
 import crypto from "crypto";
 import matter from "gray-matter";
+
+export interface IReplaceImgOptions extends ISMMSOptions {
+  replaceURL?: boolean;
+  replaceURLReg?: RegExp;
+}
 export default class MarkdownBlogPushTool extends API {
+  replaceURL: boolean;
+  replaceURLReg: RegExp;
   constructor(
     metaWeblogOptions: IMetaWeblogOptions,
-    SMMSOptions?: ISMMSOptions
+    replaceImgOptions?: IReplaceImgOptions
   ) {
-    super(metaWeblogOptions, SMMSOptions);
+    super(metaWeblogOptions, replaceImgOptions);
+    this.replaceURL = replaceImgOptions?.replaceURL || false;
+    this.replaceURLReg = replaceImgOptions?.replaceURLReg || new RegExp("");
   }
-
+  isDir(pathname: string) {
+    return fs.stat(pathname).then((stats) => stats.isDirectory());
+  }
   /**
-   * @description: 发布所有的文章
-   * @param {*} dirPath md 文件路径
-   * @param {*} replace 是否替换图片
+   * @description: 通过 metaweblog-api 推送 md 文件
+   * @param {*} pathname 文件路径 可以是文件路径 或者文件夹路径
+   * @param {*} replaceImg 是否需要替换 md 文件内部图片
    * @return {*}
    */
-  async handleAllPushPost(dirPath: string, replace = false) {
+  async pushMarkdownBlog(pathname: string, replaceImg = false) {
+    const isDir = await this.isDir(pathname);
+    const handler = replaceImg
+      ? this.pushAndReplaceImgUrl.bind(this)
+      : this.handlePushMarkdownBlog.bind(this);
+    if (isDir) {
+      this.deepDir(pathname, handler);
+    } else {
+      handler(pathname);
+    }
+  }
+  /**
+   * @description: 通过 smms 推送 md 文件中的图片
+   * @param {*} pathname 文件路径 可以是文件路径 或者文件夹路径
+   * @return {*}
+   */
+  async replaceImgUrl(pathname: string) {
+    const isDir = await this.isDir(pathname);
+    if (isDir) {
+      this.deepDir(pathname, this.handleReplaceImgUrl.bind(this));
+    } else {
+      this.handleReplaceImgUrl(pathname);
+    }
+  }
+  /**
+   * @description:  通过 metaweblog-api 推送 md 文件 && 通过 smms 推送 md 文件中的图片
+   * @param {string} filePath 只能是文件路径
+   * @return {*}
+   */
+  async pushAndReplaceImgUrl(filePath: string) {
+    await this.handleReplaceImgUrl(filePath);
+    await this.handlePushMarkdownBlog(filePath);
+  }
+  /**
+   * @description: 递归处理处理文件夹
+   * @param {*} dirPath md 所在文件夹路径
+   * @param {*} handle 处理 md 文件的函数
+   * @return {*}
+   */
+  async deepDir(
+    dirPath: string,
+    handler: (filePath: string, ...arg: any[]) => Promise<any>,
+    ...arg: any[]
+  ) {
     const files = await fs.readdir(dirPath);
     for (const fileName of files) {
       const filePath = path.resolve(dirPath, fileName);
       // dir 继续递归
       const stats = await fs.stat(filePath);
       if (stats.isDirectory()) {
-        await this.handleAllPushPost(filePath, replace);
+        await this.deepDir(filePath, handler, ...arg);
         continue;
       }
       if (filePath.indexOf(".md") === -1) continue;
       console.log("[********************************]");
       console.log("[fileName]", fileName);
-      if (replace) {
-        await this.replaceImgUrl(filePath);
-      } else {
-        await this.handlePushPost(filePath);
-      }
+      await handler(filePath, ...arg);
     }
   }
 
-  // 根据path修改或者新建文章
-  async handlePushPost(filePath: string) {
+  /**
+   * @description: 推送单个 md 文件
+   * @param {*} filePath md 文件路径
+   * @return {*}
+   */
+  async handlePushMarkdownBlog(filePath: string) {
+    if (filePath.indexOf(".md") === -1) return;
     const fileName = path.basename(filePath);
     // 解析 md 文件
     const grayMatterFile = matter.read(filePath);
@@ -98,8 +153,13 @@ export default class MarkdownBlogPushTool extends API {
     await new Promise((r) => setTimeout(r, 3500, true));
   }
 
-  // 替换 md 文件中的图片 url 地址
-  async replaceImgUrl(filePath: string) {
+  /**
+   * @description: 替换 md 文件中的图片 url 地址
+   * @param {string} filePath md 文件路径
+   * @return {*}
+   */
+  async handleReplaceImgUrl(filePath: string) {
+    if (filePath.indexOf(".md") === -1) return;
     const fileName = path.basename(filePath);
     // 解析 md 文件
     const grayMatterFile = matter.read(filePath);
@@ -134,16 +194,21 @@ export default class MarkdownBlogPushTool extends API {
     await fs.writeFile(filePath, str);
     console.log("[回写成功]", fileName);
   }
-  // 下载并上传图片
+  /**
+   * @description: 上传图片 本地图片 或者 网络图片
+   * @param {string} imgPath 图片路径 或者 图片 url
+   * @param {string} filePath md 文件路径
+   * @return {*}
+   */
   async uploadImg(imgPath: string, filePath: string) {
     // 测试是否为 url
     const httpTest = /^http/;
     let res;
     // 网络图片
     if (httpTest.test(imgPath)) {
-      const reg = new RegExp("https://bitbw.top/public/img/my_gallery/");
-      if (!reg.test(imgPath)) return;
-      res = this.downloadAndUploadSM(imgPath);
+      if (!this.replaceURL) return;
+      if (!this.replaceURLReg.test(imgPath)) return;
+      res = await this.downloadAndUploadSM(imgPath);
     } else {
       let curPath;
       if (path.isAbsolute(imgPath)) {
@@ -152,7 +217,7 @@ export default class MarkdownBlogPushTool extends API {
         const dirname = path.dirname(filePath);
         curPath = path.resolve(dirname, imgPath);
       }
-      res = this.readAndUploadSM(curPath);
+      res = await this.readAndUploadSM(curPath);
     }
     return res;
   }
