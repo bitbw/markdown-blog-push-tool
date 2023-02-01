@@ -1,8 +1,9 @@
 # Markdown blog push tool for node.js
 
 ## install
-<!-- TODO:-->
+
 ```bash
+npm install markdown-blog-push-tool
 ```
 
 ## Usage
