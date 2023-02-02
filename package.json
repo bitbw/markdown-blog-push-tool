@@ -1,16 +1,17 @@
 {
   "name": "markdown-blog-push-tool",
   "version": "1.0.1",
-  "description": "A markdown blog file push tool for hexo and ",
+  "description": "A tool for processing markdown file blogs, supports uploading blog platforms and uploading pictures to image beds",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "scripts": {
-    "test": "node dist/bundle.cjs.js",
+    "test": "node __test/test.js",
     "build:js": "rollup --c --bundleConfigAsCjs",
     "build:types": "tsc --emitDeclarationOnly",
     "build": " npm run build:types && npm run build:js",
     "dev": "npm run build:types && rollup --c --bundleConfigAsCjs --watch",
-    "lint": "eslint --fix src/**"
+    "lint": "eslint --fix src/**",
+    "release": "release-it"
   },
   "types": "./dist/types/main.d.ts",
   "devDependencies": {
@@ -29,6 +30,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "2.8.3",
+    "release-it": "^15.6.0",
     "rollup": "^3.10.0",
     "typescript": "^4.9.4"
   },
@@ -40,9 +42,10 @@
     "markdown",
     "blog",
     "MetaWeblog",
-    "hexo",
     "gray-matter",
-    "docusaurus"
+    "hexo",
+    "docusaurus",
+    "nodejs"
   ],
   "files": [
     "dist",

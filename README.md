@@ -1,5 +1,10 @@
 # Markdown blog push tool for node.js
 
+A tool for processing markdown file blogs, supports uploading blog platforms and uploading pictures to image beds
+
+The md files of hexo and docusaurus can be uploaded
+
+This project uses [metaweblog-api](https://github.com/uhavemyword/metaweblog-api) to complete the blog upload
 ## install
 
 ```bash
