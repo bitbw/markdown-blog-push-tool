@@ -1,6 +1,6 @@
 {
   "name": "markdown-blog-push-tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A markdown blog file push tool for hexo and ",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
