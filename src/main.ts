@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import crypto from "crypto";
 import matter from "gray-matter";
-
+// TODO: log 打印优化
 export interface IReplaceImgOptions extends ISMMSOptions {
   replaceURL?: boolean;
   replaceURLReg?: RegExp;
@@ -86,6 +86,7 @@ export default class MarkdownBlogPushTool extends API {
       console.log("[fileName]", fileName);
       await handler(filePath, ...arg);
     }
+    console.log(`[INFO] dirPath: "${dirPath}"  is complete`);
   }
 
   /**
@@ -145,11 +146,10 @@ export default class MarkdownBlogPushTool extends API {
       data.cnblogs.postid = res;
     }
     // 回写数据
-    // @ts-ignore: Unreachable code error
-    const str = grayMatterFile.stringify();
+    const str = matter.stringify(content, data);
     await fs.writeFile(filePath, str);
     console.log("[回写成功]", fileName);
-    // 等待 1分钟 后继续下一个
+    // 等待 3500 后继续下一个
     await new Promise((r) => setTimeout(r, 3500, true));
   }
 
@@ -169,9 +169,11 @@ export default class MarkdownBlogPushTool extends API {
     const reg = /!\[.*\]\((.*)\)/g;
     const reg2 = /!\[.*\]\((.*)\)/;
     const imgUrls = content.match(reg);
-    if (!imgUrls || !imgUrls.length) return content;
+    if (!imgUrls || !imgUrls.length) return;
+    let replaceCount = 0;
     for (const [index, imgUrl] of imgUrls.entries()) {
       const url = (imgUrl?.match(reg2) as Array<string>)[1];
+      if (this.replaceURLReg.test(url)) continue;
       console.log(`[替换URL ${index + 1}]`, url);
       try {
         const newUrl: any = await this.uploadImg(url, filePath);
@@ -184,13 +186,16 @@ export default class MarkdownBlogPushTool extends API {
         }
         content = content.replace(url, newUrl);
         console.log(`[替换成功 ${index + 1}]`, newUrl);
+        replaceCount++;
       } catch (error: any) {
         console.log(`[替换失败 ${index + 1}]`, error.message);
       }
     }
-    grayMatterFile.content = content;
-    // @ts-ignore: Unreachable code error
-    const str = grayMatterFile.stringify();
+    if (replaceCount === 0) {
+      console.log(`[无需要替换的img]`);
+      return;
+    }
+    const str = matter.stringify(content, data);
     await fs.writeFile(filePath, str);
     console.log("[回写成功]", fileName);
   }
@@ -207,7 +212,7 @@ export default class MarkdownBlogPushTool extends API {
     // 网络图片
     if (httpTest.test(imgPath)) {
       if (!this.replaceURL) return;
-      if (!this.replaceURLReg.test(imgPath)) return;
+      if (this.replaceURLReg.test(imgPath)) return;
       res = await this.downloadAndUploadSM(imgPath);
     } else {
       let curPath;
