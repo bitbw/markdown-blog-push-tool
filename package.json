@@ -1,6 +1,6 @@
 {
   "name": "markdown-blog-push-tool",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A tool for processing markdown file blogs, supports uploading blog platforms and uploading pictures to image beds",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
