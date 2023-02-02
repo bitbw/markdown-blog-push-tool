@@ -8,19 +8,49 @@ npm install markdown-blog-push-tool
 
 ## Usage
 
-```js
-const MarkdownBlogPushTool = require("markdown-blog-push-tool");
-const { resolve } = require("path");
-const Authorization = "xxx"; //  use your smms Authorization
-const apiUrl = "https://rpc.cnblogs.com/metaweblog/xxx"; // use your blog API instead
-const username = "xxx";
-const password = "xxx"; // use your password
-const markdownBlogPushTool = new MarkdownBlogPushTool(
-  { apiUrl, username, password },
-  { Authorization }
-);
-// TODO : your md file dir
-const path = resolve(__dirname, "your_dirpath");
-markdownBlogPushTool.handleAllPushPost(path);
+### init
 
-``
+```js
+const MarkdownBlogPushTool = require("../");
+const { resolve } = require("path");
+const Authorization = "xxx"; // TODO :  use your smms Authorization
+const apiUrl = "xxx"; // TODO : use your blog API instead
+const username = "xxx"; // TODO: your username
+const password = "xxx"; // TODO: use your password
+const replaceURL = true; // TODO: is replaceURL
+const replaceURLReg = new RegExp("https://s2.loli.net/"); // TODO: replaceURL rule
+const markdownBlogPushTool = new MarkdownBlogPushTool(
+  { apiUrl, username, password }, // metaWeblogOptions
+  { Authorization, replaceURL, replaceURLReg } // replaceImgOptions
+);
+
+```
+
+### upload and replace all images and push all post to apiUrl
+
+```js
+// TODO: your md file dir
+const path = resolve(__dirname, "./assets");
+//  upload and replace all images and push all post to apiUrl
+markdownBlogPushTool.pushMarkdownBlog(path, true);
+
+```
+
+### push all post to apiUrl
+
+```js
+// push all post to apiUrl
+markdownBlogPushTool.pushMarkdownBlog(path);
+
+```
+
+### upload and replace all images
+
+```js
+// upload and replace all images
+markdownBlogPushTool.replaceImgUrl(path);
+```
+
+### example
+
+[example](https://github.com/bitbw/markdown-blog-push-tool/tree/main/__test)
