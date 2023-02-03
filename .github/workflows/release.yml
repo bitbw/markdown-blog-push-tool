@@ -1,4 +1,4 @@
-name: Publis npm and create Release 
+name: GitHub Releases
 
 on:
   push:
@@ -21,14 +21,10 @@ jobs:
       - name: Generate Changelog
         run: npm run changelog
       - name: Test
-        run: ls -hla && ls dist && cat CHANGELOG.md
-      - id: publis
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-      - if: steps.publish.outputs.type != 'none'
         run: |
-          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+          ls -hla 
+          ls dist
+          cat CHANGELOG.md
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
