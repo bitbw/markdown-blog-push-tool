@@ -11,7 +11,7 @@
     "build": " npm run build:types && npm run build:js",
     "dev": "npm run build:types && rollup --c --bundleConfigAsCjs --watch",
     "lint": "eslint --fix src/**",
-    "release": "release-it"
+    "changelog": "npx auto-changelog --commit-limit false --unreleased --template changelog-compact.hbs"
   },
   "types": "./dist/types/main.d.ts",
   "devDependencies": {
