@@ -24,12 +24,13 @@ jobs:
         run: |
           ls -hla 
           ls dist
+          echo =============CHANGELOG.md==============
           cat CHANGELOG.md
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: CHANGELOG.md
-          files: |
-            dist
+          files: dist/*
+           
  
