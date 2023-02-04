@@ -5,6 +5,7 @@ A tool for processing markdown file blogs, supports uploading blog platforms and
 The md files of hexo and docusaurus can be uploaded
 
 This project uses [metaweblog-api](https://github.com/uhavemyword/metaweblog-api) to complete the blog upload
+
 ## install
 
 ```bash
@@ -59,3 +60,8 @@ markdownBlogPushTool.replaceImgUrl(path);
 ### example
 
 [example](https://github.com/bitbw/markdown-blog-push-tool/tree/main/__test)
+
+## reference
+
+- [metaweblog-api](https://github.com/uhavemyword/metaweblog-api)
+- [SM.MS API](https://doc.sm.ms/)
