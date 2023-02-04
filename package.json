@@ -11,7 +11,7 @@
     "build": " npm run build:types && npm run build:js",
     "dev": "npm run build:types && rollup --c --bundleConfigAsCjs --watch",
     "lint": "eslint --fix src/**",
-    "changelog": "npx auto-changelog --commit-limit false  --sort-commits date-asc  --template changelog-compact.hbs"
+    "changelog": "auto-changelog --commit-limit false  --sort-commits date-asc  --template changelog-compact.hbs"
   },
   "types": "./dist/types/main.d.ts",
   "devDependencies": {
@@ -27,6 +27,7 @@
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
+    "auto-changelog": "^2.4.0",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
