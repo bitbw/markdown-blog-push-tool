@@ -1,19 +1,24 @@
-name: GitHub Releases
+name: GitHub Releases and NPM publish
 
 on:
   push:
     tags:
       - "v*.*.*"
 jobs:
-  build:
+  publish_releases:
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
           node-version: 14
+          registry-url: https://registry.npmjs.org/
       - name: Install
         run: npm install
       - name: Build
@@ -22,15 +27,18 @@ jobs:
         run: npm run changelog
       - name: Test
         run: |
+          echo =============env==============
+          env | grep NODE_AUTH_TOKEN
+          echo =============ls hla==============
           ls -hla 
           ls dist
           echo =============CHANGELOG.md==============
           cat CHANGELOG.md
+      - name: Publish
+        run: npm publish
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: CHANGELOG.md
           files: dist/*
-           
- 
